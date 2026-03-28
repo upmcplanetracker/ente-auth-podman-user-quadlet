@@ -1,0 +1,35 @@
+[Unit]
+Description=Ente Museum
+Requires=ente-database.service
+After=ente-database.service podman-user-wait-network-online.service
+Wants=podman-user-wait-network-online.service
+
+[Container]
+HostName=museum
+AutoUpdate=registry
+Network=ente.network
+Image=ghcr.io/ente-io/server
+PodmanArgs=--memory=4G --memory-reservation=1G
+# adjust ips below for your situation
+PublishPort=8085:8080
+Volume=/home/YOUR_USERNAME/my-ente/museum.yaml:/etc/ente/museum.yaml:ro
+Volume=/home/YOUR_USERNAME/my-ente/data:/data:rw
+Volume=/home/YOUR_USERNAME/my-ente/ente_logs:/var/logs/ente
+Environment=TZ=America/New_York
+Environment=ENTE_CONFIG_PATH=/etc/ente/museum.yaml
+Environment=ENTE_DB_HOST=postgres
+Environment=ENTE_DB_PORT=5432
+Environment=ENTE_DB_NAME=ente_db
+Environment=ENTE_DB_USER=pguser
+Environment=ENTE_DB_PASSWORD=STRONG_PASSWORD_HERE
+# adjust ips below for your situation
+Environment=ENTE_GIN_TRUSTED_PROXIES=127.0.0.1,192.168.1.0/24,10.89.0.0/24
+Environment=ENTE_LOG_LEVEL=warn
+LogDriver=k8s-file
+LogOpt=max-size=10mb
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

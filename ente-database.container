@@ -1,0 +1,23 @@
+[Unit]
+Description=Ente Database
+After=podman-user-wait-network-online.service
+Wants=podman-user-wait-network-online.service
+
+[Container]
+HostName=postgres
+AutoUpdate=registry
+Network=ente.network
+Image=docker.io/library/postgres:18
+PodmanArgs=--memory=4G
+Environment=POSTGRES_USER=pguser
+Environment=POSTGRES_PASSWORD=STRONG_PASSWORD_HERE
+Environment=POSTGRES_DB=ente_db
+Volume=/home/YOUR_USERNAME/my-ente/db-data:/var/lib/postgresql
+LogDriver=k8s-file
+LogOpt=max-size=10mb
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,28 @@
+[Unit]
+Description=Ente Web
+Requires=ente-museum.service
+After=ente-museum.service podman-user-wait-network-online.service
+Wants=podman-user-wait-network-online.service
+
+[Container]
+HostName=web
+AutoUpdate=registry
+Network=ente.network
+Image=ghcr.io/ente-io/web
+Environment=TZ=America/New_York
+Environment=ENTE_API_ORIGIN=http://SERVER_IP:8085
+Environment=ENTE_ACCOUNTS_ORIGIN=http://SERVER_IP:3401
+Environment=ENTE_AUTH_ORIGIN=http://SERVER_IP:3403
+Environment=ENTE_ALBUMS_ORIGIN=http://SERVER_IP:3402
+Environment=ENTE_PHOTOS_ORIGIN=http://SERVER_IP:3400
+Environment=NEXT_PUBLIC_ENTE_ENDPOINT=https://enteapi.YOUR_DOMAIN.com
+PublishPort=3401:3001
+PublishPort=3403:3003
+LogDriver=k8s-file
+LogOpt=max-size=10mb
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
